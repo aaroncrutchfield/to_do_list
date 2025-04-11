@@ -1,0 +1,94 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Barrel Files Guidelines
+
+## Overview
+Barrel files are essential for maintaining clean imports and efficient refactoring in Flutter applications. They help organize and expose public-facing files while keeping implementation details hidden.
+
+## Purpose
+- Simplify imports across the application
+- Reduce the impact of file name changes during refactoring
+- Maintain clean and organized code structure
+- Control which files are exposed to the public API
+
+## Package Structure with Barrel Files
+
+```
+my_package/
+├── lib/
+│   ├── src/
+│   │   ├── models/
+│   │   │   ├── model_1.dart
+│   │   │   ├── model_2.dart
+│   │   │   └── models.dart        # Barrel file
+│   │   ├── widgets/
+│   │   │   ├── widget_1.dart
+│   │   │   ├── widget_2.dart
+│   │   │   └── widgets.dart       # Barrel file
+│   │   └── my_package.dart        # Top-level barrel file
+├── test/
+└── pubspec.yaml
+```
+
+## Feature Structure with Barrel Files
+
+```
+my_feature/
+├── bloc/
+│   ├── feature_bloc.dart
+│   ├── feature_event.dart
+│   └── feature_state.dart
+├── view/
+│   ├── feature_page.dart
+│   ├── feature_view.dart
+│   └── view.dart                  # Barrel file
+└── my_feature.dart                # Top-level barrel file
+```
+
+## Barrel File Guidelines
+
+### General Rules
+- Create one barrel file per folder that contains public-facing files
+- Include a top-level barrel file for the package/feature
+- Only export files that should be accessible to other parts of the application
+- Do not export implementation details or internal files
+
+### Barrel File Contents
+
+#### Folder-level barrel file (e.g., `models.dart`):
+```dart
+export 'model_1.dart';
+export 'model_2.dart';
+```
+
+#### Top-level barrel file (e.g., `my_package.dart`):
+```dart
+export 'src/models/models.dart';
+export 'src/widgets/widgets.dart';
+```
+
+### Special Cases
+
+#### Bloc Files
+- Bloc files typically don't need a separate barrel file
+- The `feature_bloc.dart` file serves as the barrel file through `part of` directives
+- Structure remains:
+  ```
+  bloc/
+  ├── feature_bloc.dart
+  ├── feature_event.dart
+  └── feature_state.dart
+  ```
+
+## Best Practices
+1. Only export files that are part of the public API
+2. Keep barrel files simple and focused
+3. Use barrel files to hide implementation details
+4. Maintain consistent naming conventions
+5. Consider using VSCode extensions to automate barrel file management
+
+## File Pattern
+*.dart 

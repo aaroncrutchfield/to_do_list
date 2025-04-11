@@ -1,0 +1,395 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Very Good Architecture Principles
+
+## Overview
+This rule file implements Very Good Ventures' layered architecture principles, which create highly scalable, maintainable, and testable applications. The architecture consists of four distinct layers with clear responsibilities and boundaries between them.
+
+## Layered Architecture
+
+### Data Layer
+- **Purpose**: Retrieve raw data from external sources (APIs, databases, local storage, etc.)
+- **Responsibility**: Fetch data without applying domain-specific logic
+- **Guidelines**:
+  - Should be free of any business logic
+  - Implementations should be reusable across different projects
+  - Data clients should focus on a single data source
+  - Often encapsulated within specialized handlers or services
+
+### Repository Layer
+- **Purpose**: Compose data clients and apply business rules to the data
+- **Responsibility**: Fetch data from one or more data sources, apply domain-specific logic
+- **Guidelines**:
+  - Create separate repositories for each domain (UserRepository, WeatherRepository, etc.)
+  - Should not import Flutter dependencies
+  - Should not depend on other repositories
+  - Considered the "product" layer where business rules are enforced
+  - Use interface-based design with abstract classes defining the contract
+  - Implement concrete repositories (e.g., OfflineFirstRepository) that follow the interface
+  - Throw specific, well-documented exceptions for error cases
+
+### Domain Layer
+- **Purpose**: Define core business models, utilities, and interfaces
+- **Responsibility**: Provide foundation for business logic implementation
+- **Guidelines**:
+  - Contain pure Dart code with no framework dependencies
+  - Define data models, enums, and value objects
+  - Include utility classes that encapsulate specific functionality
+  - Define interfaces for services that may have multiple implementations
+  - Keep code in this layer highly reusable and well-tested
+
+### Business Logic Layer
+- **Purpose**: Implement feature-specific logic using repositories
+- **Responsibility**: Implement the bloc pattern to manage state for features
+- **Guidelines**:
+  - No dependencies on Flutter SDK
+  - No direct dependencies on other business logic components
+  - Retrieve data from repositories and provide state to the presentation layer
+  - Considered the "feature" layer that implements specific functionality
+  - Example: `onboarding_bloc.dart`, `onboarding_event.dart`, `onboarding_state.dart`
+
+### Presentation Layer
+- **Purpose**: Display UI elements and handle user interactions
+- **Responsibility**: Build widgets and manage their lifecycle
+- **Guidelines**:
+  - No business logic should exist in this layer
+  - Only interact with the business logic layer
+  - Considered the "design" layer focused on user experience
+  - Example: `onboarding_page.dart`, `onboarding_controls.dart`, `onboarding_progress.dart`
+
+## Project Organization
+
+The recommended folder structure is:
+
+```
+my_app/
+├── lib/
+│   └── feature_name/              # e.g., onboarding/
+│       ├── bloc/                  # Business logic components
+│       │   ├── onboarding_bloc.dart
+│       │   ├── onboarding_event.dart
+│       │   └── onboarding_state.dart
+│       ├── models/                # Feature-specific data models
+│       │   ├── models.dart        # Barrel file
+│       │   └── onboarding_info.dart
+│       ├── view/                  # Main feature screens
+│       │   ├── onboarding_page.dart
+│       │   └── view.dart
+│       └── widgets/               # Reusable UI components
+│           ├── widgets.dart       # Barrel file
+│           ├── onboarding_controls.dart
+│           └── onboarding_progress.dart
+├── packages/
+│   ├── user_repository/           # Repository package example
+│   │   ├── lib/
+│   │   │   ├── src/
+│   │   │   │   ├── domain/        # Domain-specific utilities and interfaces
+│   │   │   │   │   ├── domain.dart
+│   │   │   │   │   └── file_handler.dart
+│   │   │   │   ├── model/         # Data models and exceptions
+│   │   │   │   │   ├── models.dart
+│   │   │   │   │   └── exception.dart
+│   │   │   │   ├── user_repository.dart        # Interface definition
+│   │   │   │   └── offline_first_user_repository.dart  # Implementation
+│   │   │   └── user_repository.dart  # Main barrel file exposing public API
+│   │   └── test/
+│   │       ├── src/
+│   │       │   └── user_repository_test.dart
+│   │       └── user_repository_test.dart
+│   ├── api_client/                # API client package example
+│   │   ├── lib/
+│   │   │   ├── src/
+│   │   │   │   └── api_client.dart
+│   │   │   └── api_client.dart
+│   │   └── test/
+│   │       └── api_client_test.dart
+│   └── analytics_service/         # Service package example
+│       ├── lib/
+│       │   ├── src/
+│       │   │   ├── domain/
+│       │   │   ├── model/
+│       │   │   ├── analytics_service.dart       # Interface definition
+│       │   │   └── firebase_analytics_service.dart  # Implementation
+│       │   └── analytics_service.dart
+│       └── test/
+└── test/
+    └── feature_name/
+        ├── bloc/
+        ├── models/
+        ├── view/
+        └── widgets/
+```
+
+Key Structure Guidelines:
+- Presentation layer and business logic reside in the project's `lib` directory
+- Data layer, repository layer, and other service layers are separate packages in the `packages` directory
+- Feature-specific code is organized in dedicated directories
+- Models directory contains feature-specific data structures and transformations
+- Widgets directory contains reusable UI components specific to the feature
+- Tests mirror the structure of implementation code
+
+## Local Package Organization
+
+The layered architecture principles apply to all local packages, not just repositories. Each package should have a clear responsibility and follow the same structural patterns.
+
+A typical local package should follow this structure:
+
+```
+package_name/
+├── lib/
+│   ├── package_name.dart          # Main barrel file exposing public API
+│   └── src/
+│       ├── domain/                # Domain-specific utilities and interfaces
+│       │   ├── domain.dart        # Barrel file for domain exports
+│       │   └── utility_classes.dart # Utilities like handlers or services
+│       ├── model/                 # Data models and exceptions
+│       │   ├── model.dart         # Barrel file for model exports
+│       │   ├── entities.dart      # Data entities
+│       │   └── exceptions.dart    # Custom exceptions
+│       ├── package_interface.dart # Interface definition
+│       └── implementation.dart    # Concrete implementation
+```
+
+### Interface-Based Design Pattern
+
+This pattern applies to all types of packages, including services, utilities, and data sources:
+
+```dart
+/// Abstract interface class defining the contract
+abstract interface class ServiceName {
+  /// Factory constructor that returns the default implementation
+  factory ServiceName(
+    Dependencies dependencies,
+  ) = DefaultImplementation;
+
+  /// Method signature with clear documentation
+  Future<ReturnType> methodName(Parameters parameters);
+}
+
+/// Concrete implementation of the interface
+class DefaultImplementation implements ServiceName {
+  const DefaultImplementation(this._dependencies);
+  
+  final Dependencies _dependencies;
+  
+  @override
+  Future<ReturnType> methodName(Parameters parameters) async {
+    // Implementation details
+  }
+}
+```
+
+### Common Package Types
+
+1. **Repository Packages**: Manage data from multiple sources with domain-specific rules
+2. **API Client Packages**: Handle communication with specific external APIs
+3. **Service Packages**: Provide specific functionality like analytics, logging, or authentication
+4. **Utility Packages**: Offer shared utilities across the application
+5. **Feature Packages**: Encapsulate complete features that can be shared across applications
+
+## Layer Responsibilities
+
+- **lib/**: Contains the presentation layer and business logic layer
+  - **bloc/**: Feature-specific business logic components
+    - Example: `onboarding_bloc.dart`, `onboarding_event.dart`, `onboarding_state.dart`
+  - **models/**: Feature-specific data models and transformations
+    - Example: `onboarding_info.dart`
+  - **view/**: Main feature pages and views
+    - Example: `onboarding_page.dart`
+  - **widgets/**: Reusable UI components for the feature
+    - Example: `onboarding_controls.dart`, `onboarding_progress.dart`, `page_content.dart`
+- **packages/**: Contains domain, data, repository, and service layers as separate packages
+  - **domain/**: Core business models and utilities
+  - **model/**: Data structures, entities, and exceptions
+  - **interface.dart**: Contract for implementations
+  - **implementation.dart**: Specific implementation of the interface
+- **test/**: Contains tests for all components
+
+## Feature Example: Onboarding
+
+A typical feature like onboarding would include:
+
+1. **Business Logic (bloc/)**
+   - `onboarding_bloc.dart`: Manages the state of the onboarding process
+   - `onboarding_event.dart`: Defines events like next page, skip, complete
+   - `onboarding_state.dart`: Defines states like in-progress, completed
+
+2. **Models (models/)**
+   - `models.dart`: Barrel file exporting all models
+   - `onboarding_info.dart`: Contains data structures for onboarding content
+
+3. **View (view/)**
+   - `view.dart`: Barrel file exporting all views
+   - `onboarding_page.dart`: Main page that orchestrates the onboarding flow
+
+4. **Widgets (widgets/)**
+   - `widgets.dart`: Barrel file exporting all widgets
+   - `onboarding_controls.dart`: Navigation buttons (next, back, skip)
+   - `onboarding_progress.dart`: Indicators showing progress through onboarding
+   - `page_content.dart`: Content displayed on each onboarding page
+
+## Data Flow and Dependencies
+- Data should only flow upward through the layers
+- Each layer can only access the layer directly beneath it
+- Implementation details should not leak between layers
+- Examples of proper dependencies:
+  - Presentation layer (UI) → Business Logic layer (BLoC)
+  - Business Logic layer (BLoC) → Repository/Service layers
+  - Repository/Service layers → Domain layer and Data layer
+
+## Exception Handling
+
+Packages should define and throw specific exception classes:
+
+```dart
+/// Base exception class for all package exceptions
+abstract class PackageException implements Exception {
+  const PackageException(this.error, this.stackTrace);
+  
+  final Object error;
+  final StackTrace stackTrace;
+  
+  @override
+  String toString() => '$runtimeType: $error';
+}
+
+/// Specific exception for a particular error case
+class SpecificErrorException extends PackageException {
+  const SpecificErrorException(super.error, super.stackTrace);
+}
+```
+
+## Internationalization (l10n)
+
+### Overview
+Internationalization (l10n) enables applications to adapt to different languages and regions. Flutter provides robust tools for internationalizing applications through the `flutter_localizations` package and `intl` package.
+
+### Structure
+The recommended structure for internationalization files:
+
+```
+my_app/
+├── l10n/
+│   ├── arb/
+│   │   ├── app_en.arb          # English translations
+│   │   ├── app_es.arb          # Spanish translations
+│   │   └── app_fr.arb          # French translations
+│   └── l10n.yaml               # Internationalization config
+├── lib/
+│   ├── l10n/
+│   │   ├── l10n.dart           # Exports extension methods and delegates
+│   │   └── generated/          # Generated localization files
+│   │       ├── app_localizations.dart
+│   │       └── app_localizations_en.dart
+```
+
+### Configuration
+The `l10n.yaml` file in the project root configures the generation of localization files:
+
+```yaml
+arb-dir: l10n/arb
+template-arb-file: app_en.arb
+output-localization-file: app_localizations.dart
+output-class: AppLocalizations
+nullable-getter: false
+```
+
+### Implementation Guidelines
+
+1. **Translation Files**
+   - Use ARB (Application Resource Bundle) files for translations
+   - Name files with language code (e.g., `app_en.arb`, `app_fr.arb`)
+   - Include all strings that will be displayed to users
+
+2. **Example ARB File (app_en.arb)**
+   ```json
+   {
+     "@@locale": "en",
+     "appTitle": "My Application",
+     "@appTitle": {
+       "description": "The title of the application"
+     },
+     "welcome": "Welcome {name}",
+     "@welcome": {
+       "description": "Welcome message on the home screen",
+       "placeholders": {
+         "name": {
+           "type": "String",
+           "example": "John"
+         }
+       }
+     }
+   }
+   ```
+
+3. **Accessing Translations**
+   - Access translations through the context:
+     ```dart
+     // In a widget
+     Text(context.l10n.appTitle),
+     
+     // With parameters
+     Text(context.l10n.welcome('John')),
+     ```
+
+4. **Extension Methods**
+   - Create an extension on `BuildContext` for easier access:
+     ```dart
+     // In l10n.dart
+     extension LocalizationExtension on BuildContext {
+       AppLocalizations get l10n => AppLocalizations.of(this);
+     }
+     ```
+
+5. **Setup in MaterialApp**
+   - Configure supported locales and delegates:
+     ```dart
+     return MaterialApp(
+       localizationsDelegates: AppLocalizations.localizationsDelegates,
+       supportedLocales: AppLocalizations.supportedLocales,
+       // ...
+     );
+     ```
+
+### Best Practices
+
+1. **String Extraction**
+   - Extract all user-facing strings to ARB files
+   - Never hardcode strings in the UI
+   - Use descriptive keys that indicate string purpose
+
+2. **Placeholders**
+   - Use named placeholders for variables in strings
+   - Include examples in ARB files for translator context
+   
+3. **Pluralization**
+   - Use ICU syntax for pluralized strings:
+     ```json
+     "itemCount": "{count, plural, =0{No items} =1{1 item} other{{count} items}}",
+     "@itemCount": {
+       "description": "The number of items",
+       "placeholders": {
+         "count": {
+           "type": "int",
+           "example": "5"
+         }
+       }
+     }
+     ```
+
+4. **Testing**
+   - Create tests for different locales to verify translations
+   - Ensure UI handles different text lengths appropriately
+   
+5. **Maintenance**
+   - Keep translations synchronized across all ARB files
+   - Document context for translators to avoid ambiguity
+   - Consider using a translation management system for larger projects

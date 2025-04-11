@@ -1,0 +1,317 @@
+---
+description: Guidelines for testing in Flutter applications
+globs: ["*_test.dart", "test/**/*.dart"]
+alwaysApply: false
+---
+# Testing Guidelines
+
+## Overview
+At Very Good Ventures, we aim for 100% test coverage on all projects. Testing reduces bugs, encourages clean code, and provides confidence when shipping. While testing adds initial development time, it reduces QA cycles and improves maintainability.
+
+## Incremental Coverage Approach
+- Focus on testing one file at a time to achieve 100% code coverage before moving to the next file
+- Verify coverage using tools like `lcov` to ensure all lines in a file are being exercised by tests
+- Prioritize covering specific functionality branches and edge cases
+
+## File Organization
+
+### Test File Structure
+Test files should mirror your project structure:
+
+```
+my_package/
+├── lib/
+│   ├── models/
+│   │   ├── model_a.dart
+│   │   ├── model_b.dart
+│   │   └── models.dart
+│   └── widgets/
+│       ├── widget_1.dart
+│       ├── widget_2.dart
+│       └── widgets.dart
+└── test/
+    ├── models/
+    │   ├── model_a_test.dart
+    │   └── model_b_test.dart
+    └── widgets/
+        ├── widget_1_test.dart
+        └── widget_2_test.dart
+```
+
+Note: Barrel files (like `models.dart` and `widgets.dart`) do not need tests.
+
+## Test Writing Guidelines
+
+### 1. Test Real Interactions
+Always test actual user interactions rather than calling handlers directly:
+
+```dart
+// Good ✅
+testWidgets('calls [onTap] on tapping widget', (tester) async {
+  var isTapped = false;
+  await tester.pumpWidget(
+    SomeTappableWidget(
+      onTap: () => isTapped = true,
+    ),
+  );
+  await tester.tap(find.byType(SomeTappableWidget));
+  expect(isTapped, isTrue);
+});
+
+// Bad ❗️
+testWidgets('calls [onTap]', (tester) async {
+  var isTapped = false;
+  final widget = SomeTappableWidget(
+    onTap: () => isTapped = true,
+  );
+  // Directly calling the handler instead of simulating a tap
+  widget.onTap();
+  expect(isTapped, isTrue);
+});
+```
+
+### 2. Assert Results
+Always include explicit assertions using `expect` or `verify`:
+
+```dart
+// Good ✅
+testWidgets('calls [onTap] on tapping widget', (tester) async {
+  var isTapped = false;
+  await tester.pumpWidget(
+    SomeTappableWidget(
+      onTap: () => isTapped = true,
+    ),
+  );
+  await tester.tap(find.byType(SomeTappableWidget));
+  expect(isTapped, isTrue);
+});
+
+// Bad ❗️
+testWidgets('can tap widget', (tester) async {
+  await tester.pumpWidget(SomeTappableWidget());
+  await tester.tap(find.byType(SomeTappableWidget));
+});
+```
+
+### 3. Use Matchers
+Always use matchers for better error messages:
+
+```dart
+// Good ✅
+expect(name, equals('Hank'));
+expect(people, hasLength(3));
+expect(valid, isTrue);
+
+// Bad ❗️
+expect(name, 'Hank');
+expect(people.length, 3);
+expect(valid, true);
+```
+
+### 4. Type References
+Use string interpolation for type references in test descriptions:
+
+```dart
+// Good ✅
+testWidgets('renders $YourView', (tester) async {});
+group(YourView, () {});
+
+// Bad ❗️
+testWidgets('renders YourView', (tester) async {});
+group('$YourView', () {});
+```
+
+### 5. Descriptive Tests
+Write clear, descriptive test names:
+
+```dart
+// Good ✅
+testWidgets('renders $YourView for $YourState', (tester) async {});
+test('given an [input] is returning the [output] expected', () {});
+
+// Bad ❗️
+testWidgets('renders', (tester) async {});
+test('works', () {});
+```
+
+### 6. Single Purpose Tests
+Test one scenario per test:
+
+```dart
+// Good ✅
+testWidgets('renders $WidgetA', (tester) async {});
+testWidgets('renders $WidgetB', (tester) async {});
+
+// Bad ❗️
+testWidgets('renders $WidgetA and $WidgetB', (tester) async {});
+```
+
+### 7. Widget Finding
+Prefer finding widgets by type over keys:
+
+```dart
+// Good ✅
+expect(find.byType(HomePage), findsOneWidget);
+
+// Bad ❗️
+expect(find.byKey(Key('homePageKey')), findsOneWidget);
+```
+
+### 8. Mock Classes
+Use private mocks to avoid unintended test interactions:
+
+```dart
+// Good ✅
+class _MockYourClass extends Mock implements YourClass {}
+
+// Bad ❗️
+class MockYourClass extends Mock implements YourClass {}
+```
+
+## Test Organization
+
+### 1. Group Tests
+Organize tests by functionality:
+- Widget tests: group by "renders", "navigation", etc.
+- Bloc tests: group by event name
+- Repositories/clients: group by method name
+
+### 2. Test Setup
+Keep setup inside groups:
+
+```dart
+// Good ✅
+void main() {
+  group(UserRepository, () {
+    late ApiClient apiClient;
+    setUp(() {
+      apiClient = _MockApiClient();
+    });
+    // Tests...
+  });
+}
+
+// Bad ❗️
+void main() {
+  late ApiClient apiClient;
+  setUp(() {
+    apiClient = _MockApiClient();
+  });
+  group(UserRepository, () {
+    // Tests...
+  });
+}
+```
+
+### 3. State Management
+Initialize shared mutable objects per test:
+
+```dart
+// Good ✅
+void main() {
+  group(_MySubject, () {
+    late _MySubjectDependency myDependency;
+    setUp(() {
+      myDependency = _MySubjectDependency();
+    });
+    test('value starts at 0', () {
+      final subject = _MySubject(myDependency);
+      expect(subject.value, equals(0));
+    });
+  });
+}
+```
+
+### 4. Test Tags
+Use constants for test tags:
+
+```dart
+// Good ✅
+testWidgets(
+  'render matches golden file',
+  tags: TestTag.golden,
+  (tester) async {},
+);
+
+// Bad ❗️
+testWidgets(
+  'render matches golden file',
+  tags: 'golden',
+  (tester) async {},
+);
+```
+
+### 5. Dependency Injection and Mocking
+Use proper dependency injection in tests:
+
+```dart
+// Good ✅
+testWidgets('navigates when button is tapped', (tester) async {
+  final mockNavigation = _MockAppNavigation();
+  when(() => mockNavigation.navigate(any(), any())).thenAnswer((_) async => null);
+  
+  await tester.pumpWidget(
+    RepositoryProvider<AppNavigation>.value(
+      value: mockNavigation,
+      child: const MyPage(),
+    ),
+  );
+  
+  await tester.tap(find.byType(MyButton));
+  await tester.pumpAndSettle();
+  
+  verify(() => mockNavigation.navigate(any(that: isA<TargetRoute>()), any())).called(1);
+});
+
+// Bad ❗️
+testWidgets('navigates when button is tapped', (tester) async {
+  // Using a global mock or directly calling the function
+  await tester.pumpWidget(const MyPage());
+  await tester.tap(find.byType(MyButton));
+});
+```
+
+## Best Practices
+
+### 1. Independent Tests
+- Do not share state between tests
+- Initialize new instances in each test
+- Use setUp for common initialization
+- Properly reset mocks between tests
+
+### 2. Testing UI with Practical Considerations
+- Set appropriate viewport sizes in widget tests to avoid overflow issues:
+  ```dart
+  testWidgets('renders correctly on various screen sizes', (tester) async {
+    // Set a larger viewport to avoid overflow
+    tester.view.physicalSize = const Size(1080, 1920);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    
+    await tester.pumpWidget(/* ... */);
+    // Test assertions
+  });
+  ```
+
+### 3. Test Coverage
+- Aim for 100% test coverage
+- Test both success and failure cases
+- Test edge cases and error conditions
+- Pay special attention to navigation callbacks and extension methods
+
+### 4. Follow Existing Patterns
+- Study existing tests in the codebase to maintain consistent test patterns
+- Adapt your test approach to match established practices in the project
+
+## Common Pitfalls
+1. Sharing state between tests
+2. Using magic strings for test tags
+3. Not testing error cases
+4. Insufficient assertions
+5. Brittle tests dependent on test order
+6. Directly calling handlers instead of testing interactions
+7. Not properly mocking dependencies
+8. Not testing navigation and extension methods
+
+## File Pattern
+*_test.dart

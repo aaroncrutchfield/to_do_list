@@ -1,0 +1,588 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Iterative GitHub-Integrated Tutorial Development Guidelines
+
+## Overview
+This rule provides a structured approach for teaching through iterative, GitHub-integrated development workflows. Each tutorial is organized around complete features with progression through architectural layers, demonstrating professional development practices through small, incremental changes that build upon previous concepts.
+
+## Core Philosophy
+
+### Teaching Approach
+- Follow the "💪 Consistency, 🧘‍♀️ Flexibility, 🤓 Approachability, 🧪 Testability, 🏎️ Performance, 📱 Multiplatform" principles
+- Prioritize declarative over imperative programming approaches
+- Balance between code quantity, readability, and correctness
+- Demonstrate professional patterns rather than tutorial-specific shortcuts
+- Focus on making individual development steps as simple as possible
+
+### Architectural Focus
+- Teach through a layered architecture approach (data, repository, domain, business logic, presentation)
+- Demonstrate clear separation of concerns
+- Show how each component connects to the overall architecture
+- Build features by progressing through layers sequentially
+- Incorporate infrastructure/service layer for cross-cutting concerns
+
+## Feature-Based Tutorial Structure
+
+### Sprint Organization
+- **Feature-Centric Sprints**: Each sprint focuses on completing a full feature across all architectural layers
+- **Lesson-Based Issues**: Each issue corresponds to a specific lesson covering part of a feature implementation
+- **Release Checkpoints**: Create releases at the end of each sprint for feature completion
+
+### Multi-Level Progress Tracking
+- **Commit Checkpoints**: Small, incremental changes within a lesson
+- **Pull Requests**: Complete lessons (issues) with focused learning objectives
+- **Releases**: Completed features with all architectural layers implemented
+
+## Core Libraries
+
+### State Management with bloc/flutter_bloc
+- Demonstrate different state management patterns (enum vs sealed classes)
+- Show proper event handling and transformers
+- Implement various bloc patterns for different use cases
+- Follow BLoC testing best practices
+
+### Dependency Injection with get_it & injectable
+- Configure service locator pattern with get_it
+- Use injectable annotations for code generation
+- Demonstrate proper module organization
+- Show manual registration vs. generated code
+- Implement proper scoping of dependencies
+
+### Navigation with auto_route
+- Configure route generation and organization
+- Implement nested routes and route guards
+- Show parameter passing between routes
+- Demonstrate proper navigation patterns
+- Create abstraction layers for navigation services
+
+### Internationalization with flutter_localizations
+- Configure internationalization infrastructure
+- Create ARB files and extension methods for access
+- Demonstrate string interpolation and pluralization
+- Integrate translations into the UI from first implementation
+- Show how to maintain translations across multiple languages
+
+## Sprint Structure Example
+
+### Sprint 1: Core Infrastructure
+1. **Issue #1: feat(core): Project Configuration and Architecture Setup** (Lesson 1)
+   - Project structure, dependencies, architecture setup
+   - Commit checkpoints for initial setup and layer structure
+
+2. **Issue #2: feat(core): Setup Internationalization Infrastructure** (Lesson 2)
+   - Configure l10n, create base ARB files, integrate with MaterialApp
+   - Commit checkpoints for l10n setup and integration
+
+### Sprint 2: Todo Feature
+1. **Issue #3: feat(todo): Todo Domain Layer** (Lesson 3)
+   - Models, value objects, repository interfaces
+   - Commit checkpoints for model creation, validation, interface definition
+
+2. **Issue #4: feat(todo): Todo Repository Layer** (Lesson 4)
+   - Repository implementation, data source integration
+   - Commit checkpoints for initial repo, error handling, testing
+
+3. **Issue #5: feat(todo): Todo Business Logic Layer** (Lesson 5)
+   - TodoBloc implementation, state management
+   - Commit checkpoints for events, states, transformers
+
+4. **Issue #6: feat(todo): Todo Presentation Layer** (Lesson 6)
+   - UI components with integrated localization from start
+   - Commit checkpoints for ARB string additions, UI components, testing
+
+5. **Release 1.0.0**: Complete Todo Feature
+
+### Sprint 3: Auth Feature
+1. **Issue #7: feat(auth): Auth Domain Layer** (Lesson 7)
+   - User model, credentials, validation
+   - Commit checkpoints for model creation, validation, interfaces
+
+2. **Issue #8: feat(auth): Auth Repository Layer** (Lesson 8)
+   - Auth repository, token management
+   - Commit checkpoints for implementation, testing
+
+3. **Issue #9: feat(auth): Auth Business Logic Layer** (Lesson 9)
+   - AuthBloc implementation, state management
+   - Commit checkpoints for events, states, transformers
+
+4. **Issue #10: feat(auth): Auth Presentation Layer** (Lesson 10)
+   - Login/registration screens with integrated localization
+   - Commit checkpoints for ARB string additions, UI components, testing
+
+5. **Release 2.0.0**: Complete Auth Feature
+
+## Diff Visibility Approach
+
+### Commit Checkpoint Diffs
+- Small, focused changes that implement a single concept
+- Visible within PR timeline and commit history
+- Include descriptive commit messages that explain the concept
+
+### Lesson (PR) Diffs
+- Complete implementation of a specific layer for a feature
+- Visible as PR diff comparing branches
+- Include PR description detailing learning objectives and implementation approach
+
+### Feature (Release) Diffs
+- Complete feature implementation across all layers
+- Visible by comparing release tags
+- Include release notes explaining the feature and architectural components
+
+## Semantic Commit Conventions
+
+### Commit Type Prefixes
+When making commits, use these semantic prefixes aligned with architectural layers:
+
+- `feat`: Adding a new feature (any layer)
+- `fix`: Fixing a bug (any layer)
+- `refactor`: Code changes that neither fix a bug nor add a feature
+- `docs`: Changes to documentation
+- `test`: Adding missing tests/refactoring tests
+- `style`: Formatting, missing semicolons (no code change)
+- `chore`: Updating dependencies, config files, etc.
+- `perf`: Performance improvements
+
+### Issue and PR Naming Conventions
+Issues and PRs should follow the semantic commit convention for consistency:
+
+- Issue titles: `feat(feature): Description of what will be implemented`
+  - Example: `feat(auth): Implement User model and Repository interface`
+  - Example: `feat(todo): Create Todo Bloc with event handling`
+
+- PR titles should match the corresponding issue title:
+  - Example: `feat(auth): Implement User model and Repository interface`
+
+This creates a cohesive connection between issues, branches, commits, and PRs.
+
+### Layer-Specific Commit Examples
+```
+feat(todo): add Todo model with validation
+fix(auth): handle offline state in AuthRepository
+refactor(todo): simplify TodoBloc state management
+feat(auth): implement LoginView component with localized strings
+feat(todo): configure DI for Todo feature
+test(todo): add unit tests for Todo validation
+```
+
+### Branch Naming Conventions
+- Feature branches: `feature/issue-number-short-description`
+  - Examples: `feature/3-auth-domain`, `feature/7-todo-business-logic`
+
+### PR Structure
+Each PR should:
+- Implement a complete lesson (one architectural layer for a feature)
+- Include a clear description of learning objectives
+- List commit checkpoints completed
+- Provide highlights of key code changes
+- Include screenshots or demos if applicable
+
+## Commit Checkpoint Process
+
+### Commit Notification Format
+When reaching a commit point during a tutorial session, use this explicit notification format:
+
+```
+🔴 COMMIT CHECKPOINT 🔴
+
+Commit Message: feat(todo): Implement Todo validation
+Files Changed: 
+- lib/src/todo/domain/models/todo.dart
+- test/src/todo/domain/models/todo_test.dart
+
+What was implemented:
+- Input validation for Todo title and description
+- Custom ValueObjects for validated fields
+- Unit tests to verify validation rules
+
+Next steps after commit:
+- Implement TodoStatus enum
+- Add status validation rules
+```
+
+### Pre-Planning Commit Points
+Before each lesson, outline planned commit points in the GitHub issue:
+
+```
+Planned Commit Checkpoints:
+1. ✅ feat(todo): Basic Todo model structure
+2. ⬜ feat(todo): Todo validation logic
+3. ⬜ feat(todo): TodoRepository interface
+4. ⬜ test(todo): Add tests for Todo model
+5. ⬜ docs(todo): Add documentation for domain components
+```
+
+Update checkmarks as each commit is completed during the lesson.
+
+## Development Process for Each Feature
+
+### 1. Domain Layer Implementation
+- Create pure Dart models and utilities
+- Implement value objects
+- Define repository interfaces
+- No dependencies on Flutter or other layers
+- **Example Commit Checkpoints**:
+  1. Basic model structure
+  2. Value object implementation
+  3. Validation logic
+  4. Repository interface definition
+  5. Unit tests
+
+### 2. Repository Layer Implementation
+- Implement repository interfaces
+- Connect to data sources
+- Apply business rules
+- Demonstrate proper exception handling
+- Register in dependency injection
+- **Example Commit Checkpoints**:
+  1. Basic repository structure
+  2. Data source integration
+  3. Error handling implementation
+  4. Business rule application
+  5. Unit tests with mocks
+  6. DI registration
+
+### 3. Business Logic Layer Implementation
+- Create Bloc/Cubit classes
+- Implement different state patterns (enum vs sealed classes)
+- Demonstrate event transformers (sequential, restartable, droppable)
+- Register in dependency injection
+- Show proper unit testing with BlocTest
+- **Example Commit Checkpoints**:
+  1. Basic bloc structure and events
+  2. State class definition
+  3. Event handling implementation
+  4. Transformer configuration
+  5. Unit tests for state transitions
+  6. DI registration
+
+### 4. Presentation Layer Implementation
+- Build UI components that connect to business logic
+- Add feature-specific strings to ARB files before implementing UI
+- Use localized strings from the start (context.l10n.stringKey)
+- Show declarative widget patterns
+- Demonstrate proper state consumption
+- Implement widget tests that verify proper localization
+- Show navigation between routes
+- **Example Commit Checkpoints**:
+  1. Add feature strings to ARB files
+  2. Basic screen structure with localized strings
+  3. UI component implementation
+  4. BLoC state consumption
+  5. Form validation (if applicable)
+  6. Navigation integration
+  7. Widget tests for localized UI
+
+## Internationalization Implementation
+
+### Early Setup (Core Sprint)
+- Configure l10n.yaml and project structure
+- Create base ARB files with app-wide strings
+- Implement BuildContext extension for string access
+- Configure MaterialApp with proper delegates
+- **Example Commit Checkpoints**:
+  1. Add internationalization dependencies
+  2. Configure l10n.yaml
+  3. Create initial ARB files
+  4. Implement BuildContext extension
+  5. Configure MaterialApp
+
+### Per-Feature Integration
+- Add feature-specific strings to ARB files at the start of presentation layer
+- Use context.l10n.stringKey instead of hardcoded strings
+- Add examples of pluralization and interpolation where appropriate
+- Test with different locales to verify layout flexibility
+- **Example Commit Checkpoints**:
+  1. Add feature-specific strings to ARB files
+  2. Implement UI with localized strings
+  3. Add pluralization examples if needed
+  4. Test with different languages
+
+## Release Process
+
+### Pre-Release Review
+Before creating a release:
+- Verify all feature PRs are merged
+- Ensure tests pass for the entire feature
+- Review documentation for the feature
+- Check that all commit checkpoints are completed
+- Verify internationalization is properly implemented
+
+### Release Creation
+- Tag with semantic version (e.g., `v1.0.0`)
+- Include detailed release notes:
+  - Feature overview
+  - Architectural components implemented
+  - Learning objectives achieved
+  - Code examples
+  - Screenshots if applicable
+
+### Post-Release
+- Create a branch comparison link between releases
+- Update project board to reflect completed sprint
+- Prepare issues for the next sprint/feature
+
+## Issue Template
+
+```
+---
+name: Lesson Template
+about: Template for creating lesson-based issues
+title: "feat(feature): Descriptive implementation title"
+labels: lesson
+assignees: ''
+---
+
+## Feature
+Brief description of the feature being implemented
+
+## Layer
+Architectural layer being addressed (Domain, Repository, Business Logic, Presentation)
+
+## Learning Objectives
+- Objective 1
+- Objective 2
+- Objective 3
+
+## Implementation Steps
+1. First step
+2. Second step
+3. Third step
+
+## Planned Commit Checkpoints
+1. ⬜ feat(feature): Checkpoint 1 description
+2. ⬜ feat(feature): Checkpoint 2 description
+3. ⬜ feat(feature): Checkpoint 3 description
+
+## Prerequisites
+- Previous lessons/concepts that should be understood
+- Required environment setup
+
+## Resources
+- Links to relevant documentation
+- Example code references
+```
+
+## Pull Request Template
+
+```
+---
+name: Lesson Pull Request
+about: PR template for lesson completion
+---
+
+## Lesson Completed
+feat(feature): Descriptive implementation title
+
+## Learning Objectives Achieved
+- [x] Objective 1
+- [x] Objective 2
+- [x] Objective 3
+
+## Commit Checkpoints Completed
+- [x] feat(feature): Checkpoint 1
+- [x] feat(feature): Checkpoint 2
+- [x] feat(feature): Checkpoint 3
+
+## Implementation Notes
+Brief description of implementation approach and architectural decisions
+
+## Screenshots/Demos
+If applicable
+
+## Diff Highlights
+Key code changes to review:
+- Path/to/file.dart: Description of change
+- Path/to/another_file.dart: Description of change
+```
+
+## Technical Implementation Details
+
+### Domain Layer Best Practices
+- Create pure Dart models with proper validation
+- Implement immutable data structures with copyWith methods
+- Use value objects for semantically meaningful types
+- Define repository interfaces with clear contracts
+- Implement domain-specific exceptions
+- Write comprehensive unit tests
+
+### Repository Layer Best Practices
+- Follow interface-based design pattern
+- Handle network and database errors gracefully
+- Convert between API/database models and domain models
+- Implement proper caching strategies
+- Create mock implementations for testing
+- Follow OfflineFirst pattern where appropriate
+
+### Business Logic Layer Best Practices
+- Choose appropriate state representation (enum vs sealed classes)
+- Implement proper event validation
+- Use transformers for complex event sequences
+- Follow unidirectional data flow
+- Encapsulate repository calls
+- Handle loading states and errors consistently
+
+### Presentation Layer Best Practices
+- Separate screens from reusable widgets
+- Use localized strings from the beginning (no hardcoded strings)
+- Use appropriate state consumption widgets (BlocBuilder, BlocListener)
+- Implement proper form validation
+- Follow Material Design/Human Interface guidelines
+- Create widget tests for UI components
+- Use proper navigation patterns
+
+### Internationalization Best Practices
+- Extract all user-facing strings to ARB files
+- Use descriptive string keys that indicate purpose
+- Include translator comments for context
+- Use proper interpolation for dynamic values
+- Implement pluralization for quantity-dependent strings
+- Test UI with different languages to ensure layout flexibility
+- Keep translations in sync across language files
+
+## Library Implementation Details
+
+### bloc/flutter_bloc Implementation
+- **State Management Patterns**:
+  - **Enum-based State**: Best for form-based UIs with multiple fields
+  - **Sealed Class State**: Best for data fetching operations
+- **Event Transformers**:
+  - **Sequential**: Process events one after another
+  - **Concurrent**: Process events simultaneously
+  - **Restartable**: Cancel previous operations when new event arrives
+  - **Droppable**: Ignore new events while processing current event
+
+### get_it & injectable Implementation
+- **Registration Types**:
+  - **Singleton**: Single instance for the entire app
+  - **LazySingleton**: Single instance, created when first requested
+  - **Factory**: New instance each time requested
+- **Module Organization**:
+  - **Feature Modules**: Group related services by feature
+  - **Layer Modules**: Group services by architectural layer
+- **Interface Registration**:
+  - Use `@Named` or `@factoryMethod` for interface implementations
+  - Implement proper module configuration
+
+### auto_route Implementation
+- **Route Organization**:
+  - Group routes by feature or flow
+  - Use nested routes for related screens
+  - Implement route guards for protected routes
+- **Navigation Patterns**:
+  - Abstract navigation through service layer
+  - Pass parameters safely between routes
+  - Handle deep linking and back navigation
+
+### flutter_localizations Implementation
+- **Configuration**:
+  - Configure l10n.yaml for generation settings
+  - Set up standard ARB directory structure
+  - Create extension methods for convenient access
+- **Usage Patterns**:
+  - Add strings to ARB files before implementing UI
+  - Use context.l10n for accessing translations
+  - Demonstrate proper interpolation and pluralization
+  - Show adaptive layouts for different text lengths
+
+## Testing Approach
+
+### Domain Layer Testing
+- Unit test all model validation logic
+- Test value object constraints
+- Verify repository interface contracts
+- Test domain utilities thoroughly
+
+### Repository Layer Testing
+- Mock data sources in repository tests
+- Test different network conditions
+- Verify proper error handling
+- Test caching behavior
+
+### Business Logic Layer Testing
+- Use BlocTest for state transition testing
+- Test event validation and transformation
+- Verify error handling in blocs
+- Mock repositories in bloc tests
+
+### Presentation Layer Testing
+- Test widgets in isolation
+- Verify UI responds to different states
+- Test form validation in UI
+- Verify proper rendering of localized strings
+- Test with different locales to ensure layout flexibility
+- Mock blocs in widget tests
+
+## Best Practices for Tutorial Instruction
+
+### Incremental Teaching Approach
+- Begin each sprint with feature overview
+- Start each lesson with layer explanation
+- Use commit checkpoints for concept introduction
+- Make connections to previously taught concepts
+
+### Each Sprint (Feature)
+1. **Sprint Introduction**
+   - Present the complete feature being built
+   - Show architectural diagram for the feature
+   - Explain how lessons will build toward complete implementation
+
+2. **Lesson Sequence**
+   - Progress through architectural layers in order
+   - Complete one layer before moving to the next
+   - Show how layers connect and interact
+
+3. **Sprint Conclusion**
+   - Create feature release with detailed notes
+   - Review the complete implementation
+   - Compare with previous release to highlight differences
+
+### Each Lesson (Layer of a Feature)
+1. **Lesson Introduction**
+   - Review learning objectives for this layer
+   - Explain architectural principles being demonstrated
+   - Present commit checkpoint plan
+
+2. **Implementation Process**
+   - Follow commit checkpoint plan
+   - Pause at each checkpoint to explain concepts
+   - Show diffs and explain architectural significance
+
+3. **Lesson Conclusion**
+   - Create PR with detailed description
+   - Review complete layer implementation
+   - Highlight key learning points
+
+### Each Commit Checkpoint
+1. **Concept Introduction**
+   - Explain the specific concept to be implemented
+   - Show how it fits into the layer architecture
+   - Reference relevant code examples
+
+2. **Implementation**
+   - Code the specific feature
+   - Explain architectural decisions
+   - Write tests for the implementation
+
+3. **Review and Commit**
+   - Show diff of changes made
+   - Explain technical details
+   - Make the commit with proper semantic message
+
+## Common Pitfalls to Avoid
+1. Mixing architectural layers in a single lesson
+2. Implementing features without proper planning
+3. Skipping test implementation
+4. Creating overly complex state management
+5. Making large commits that combine multiple concepts
+6. Not explaining architectural decisions
+7. Over-relying on code generation without explanation
+8. Confusing dependency injection setup
+9. Inadequate testing of generated code
+10. Complex navigation patterns without proper explanation
+11. Inconsistent semantic commit prefixes
+12. Ignoring CI/CD validation failures
+13. Using hardcoded strings instead of localized resources
+14. Adding internationalization as an afterthought rather than from the start

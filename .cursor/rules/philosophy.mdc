@@ -1,0 +1,116 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Very Good Engineering Philosophy
+
+## Overview
+Very Good Ventures has consolidated popular coding practices into "Very Good Architecture," an opinionated approach that enables "ship fast and ship safe" development practices.
+
+## Core Qualities
+A good software architecture should be:
+- 💪 **Consistent**: Strong opinions on complex problems (state management, testing, etc.)
+- 🧘‍♀️ **Flexible**: Easy to refactor or replace features
+- 🤓 **Approachable**: Enables rapid onboarding for all developers
+- 🧪 **Testable**: Supports automated testing and 100% code coverage
+- 🏎️ **Performant**: Executes quickly by default
+- 📱 **Multiplatform**: Works across all platforms
+
+## Key Principles
+
+### 🏁 Building for Success
+- Focus on making individual development steps as simple as possible
+- Break down complex tasks into manageable pieces
+- Prioritize engineering process improvements
+
+### 🍰 Layered Architecture
+- Three main layers: presentation, business logic, and data
+- Clear architectural boundaries
+- Reduced cognitive load through separation of concerns
+- Enables individual layer testing
+
+### 🤖 Keep It Simple — for the Humans
+- Create minimal, readable code that models the problem space correctly
+- Balance between code quantity, readability, and correctness
+- Leverage:
+  - Declarative code
+  - Thoughtful naming
+  - Object-oriented design patterns
+  - Tests
+
+### 📜 Declarative Programming
+- Focus on declaring what the code should be, not how it should happen
+- Prefer declarative over imperative approaches
+- Example:
+  ```dart
+  // Declarative (preferred)
+  return Visualizer(
+    children: [
+      VisualElement(),
+    ],
+  );
+
+  // Imperative (avoid)
+  final visualizer = Visualizer();
+  final text = VisualElement();
+  visualizer.add(text);
+  return visualizer;
+  ```
+
+### 🧨 Reactive Programming
+- Use cautiously, primarily at repository layer
+- Focus on data transformation plumbing
+- Avoid complex data transformations
+- Be mindful of unintended coupling
+- Treat reactive programming like glue - powerful but can be messy if not careful
+
+### 💪 Consistency
+- Strong opinions on:
+  - Tests
+  - Dependency injection
+  - State management
+  - Business logic organization
+- Familiar structure across projects
+- Reduced learning curve for developers
+
+### 🧘‍♀️ Flexibility
+- Support rapid requirement changes
+- Enable quick refactoring
+- Maintain high code quality
+- Create consistent patterns between features
+
+### 🤓 Approachability
+- Accept some boilerplate for clarity
+- Prioritize code understanding
+- Enable quick refactoring
+- Support efficient developer onboarding
+
+### 🏎️ Performance
+- Leverage machine code compilation where possible
+- Mindful of algorithmic complexity
+- Careful selection of third-party libraries
+- Informed decisions based on extensive experience
+
+### 📱 Multiplatform
+- Maintain single high-quality codebase
+- Leverage Flutter for cross-platform development
+- Benefits:
+  - Single codebase for iOS, Android, Web, Linux, macOS, Windows
+  - Mature ecosystem with 45,000+ packages
+  - Excellent developer experience
+  - Hot reload and extensive widget library
+
+## Best Practices
+1. Write declarative code that clearly expresses intent
+2. Maintain clear architectural boundaries
+3. Prioritize code readability and maintainability
+4. Focus on testability and test coverage
+5. Keep implementation details hidden
+6. Use reactive programming judiciously
+7. Maintain consistent patterns across the codebase
+8. Consider performance implications
+9. Leverage cross-platform capabilities
+
+## File Pattern
+*.dart 

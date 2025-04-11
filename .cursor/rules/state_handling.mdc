@@ -1,0 +1,178 @@
+---
+description: Guidelines for state handling in Blocs and Cubits
+globs: 
+alwaysApply: false
+---
+# State Handling Guidelines
+
+## Overview
+When working with Blocs/Cubits, there are two main approaches to handling state: using enums with a single state class or using sealed/abstract classes. The choice depends on whether you need to persist previous data when emitting new states.
+
+## Persisting Previous Data
+
+### When to Use
+- Forms with step-by-step data updates
+- States with independently loaded values
+- Need to maintain previous state data
+
+### Implementation with Enum
+```dart
+enum CreateAccountStatus {
+  initial,
+  loading,
+  success,
+  failure,
+}
+
+class CreateAccountState extends Equatable {
+  const CreateAccountState({
+    this.status = CreateAccountStatus.initial,
+    this.name,
+    this.surname,
+    this.email,
+  });
+
+  final CreateAccountStatus status;
+  final String? name;
+  final String? surname;
+  final String? email;
+
+  CreateAccountState copyWith({
+    CreateAccountStatus? status,
+    String? name,
+    String? surname,
+    String? email,
+  }) {
+    return CreateAccountState(
+      status: status ?? this.status,
+      name: name ?? this.name,
+      surname: surname ?? this.surname,
+      email: email ?? this.email,
+    );
+  }
+
+  bool get isValid => 
+      name != null && name!.isNotEmpty &&
+      surname != null && surname!.isNotEmpty &&
+      email != null && email!.isNotEmpty;
+}
+```
+
+### Usage in Cubit
+```dart
+class CreateAccountCubit extends Cubit<CreateAccountState> {
+  CreateAccountCubit(): super(const CreateAccountState());
+
+  void updateName(String name) {
+    emit(state.copyWith(name: name));
+  }
+
+  void updateEmail(String email) {
+    emit(state.copyWith(email: email));
+  }
+}
+```
+
+## Fresh States (No Data Persistence)
+
+### When to Use
+- Data fetching operations
+- One-time state transitions
+- No need to maintain previous state data
+
+### Implementation with Sealed Classes (Flutter 3.13+)
+```dart
+sealed class ProfileState {}
+
+class ProfileLoading extends ProfileState {}
+
+class ProfileSuccess extends ProfileState {
+  ProfileSuccess(this.profile);
+  final Profile profile;
+}
+
+class ProfileFailure extends ProfileState {
+  ProfileFailure(this.errorMessage);
+  final String errorMessage;
+}
+```
+
+### Implementation with Abstract Classes (Pre-Flutter 3.13)
+```dart
+abstract class ProfileState {}
+
+class ProfileLoading extends ProfileState {}
+
+class ProfileSuccess extends ProfileState {
+  ProfileSuccess(this.profile);
+  final Profile profile;
+}
+
+class ProfileFailure extends ProfileState {
+  ProfileFailure(this.errorMessage);
+  final String errorMessage;
+}
+```
+
+## Shared Properties Across States
+
+### Implementation
+```dart
+sealed class ProfileState {
+  // Shared properties go here
+}
+
+class ProfileSuccess extends ProfileState {
+  ProfileSuccess(this.profile);
+  final Profile profile;
+}
+
+class ProfileEditing extends ProfileState {
+  ProfileEditing(this.profile);
+  final Profile profile;
+}
+```
+
+### Usage in Switch Statements
+```dart
+switch (state) {
+  case ProfileSuccess(profile: final prof):
+  case ProfileEditing(profile: final prof):
+    // Handle both states that have profile
+    break;
+  case ProfileLoading():
+  case ProfileFailure():
+    // Handle other states
+    break;
+}
+```
+
+## Best Practices
+
+### Using Enum States
+1. Create a status enum for different state conditions
+2. Use a single state class with nullable properties
+3. Implement copyWith for state updates
+4. Add validation getters as needed
+
+### Using Sealed/Abstract Classes
+1. Create separate classes for each state
+2. Keep state-specific data isolated
+3. Use pattern matching for state handling
+4. Share common properties through parent class
+5. Do not use freezed files for states
+
+### State Consumption Guidelines
+1. Use BlocBuilder for UI updates
+2. Leverage switch statements for state handling
+3. Use pattern matching with sealed classes
+4. Handle all possible states
+
+## Common Pitfalls
+1. Mixing state management approaches
+2. Not handling all possible states
+3. Losing important data during state transitions
+4. Over-complicating state structure
+
+## File Pattern
+*.dart 

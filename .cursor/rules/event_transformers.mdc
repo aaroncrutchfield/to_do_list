@@ -1,0 +1,133 @@
+---
+description: Working with Blocs
+globs: 
+alwaysApply: false
+---
+# Bloc Event Transformers Guidelines
+
+## Overview
+Since Bloc v.7.2.0, events are handled concurrently by default. Event transformers help control how events are processed and prevent issues like race conditions and performance degradation.
+
+## Event Transformer Registration
+
+```dart
+class MyBloc extends Bloc<MyEvent, MyState> {
+  MyBloc() : super(MyState()) {
+    on<MyEvent>(
+      _onEvent,
+      transformer: mySequentialTransformer(),
+    )
+    on<MySecondEvent>(
+      _onSecondEvent,
+      transformer: mySequentialTransformer(),
+    )
+  }
+}
+```
+
+Note: Event transformers are only applied within the bucket they are specified in. Events of different types are processed concurrently.
+
+## Available Transformers
+
+### Concurrent (Default)
+- Events are handled simultaneously
+- No guarantees regarding order of completion
+- Best for independent operations
+
+### Sequential
+- Events are handled one at a time
+- First in, first out order
+- Best for operations that depend on previous state
+- Example:
+  ```dart
+  class MoneyBloc extends Bloc<MoneyEvent, MoneyState> {
+    MoneyBloc() : super(MoneyState()) {
+      on<ChangeBalance>(
+        _onChangeBalance,
+        transformer: sequential(),
+      )
+    }
+  }
+  ```
+
+### Droppable
+- Discards events received while processing
+- Best for preventing duplicate operations
+- Example:
+  ```dart
+  class SayHiBloc extends Bloc<SayHiEvent, SayHiState> {
+    SayHiBloc() : super(SayHiState()) {
+      on<SayHello>(
+        _onSayHello,
+        transformer: droppable(),
+      )
+    }
+  }
+  ```
+
+### Restartable
+- Halts previous event handlers
+- Processes most recent event
+- Best for canceling outdated operations
+- Example:
+  ```dart
+  class ThoughtBloc extends Bloc<ThoughtEvent, ThoughtState> {
+    ThoughtBloc() : super(ThoughtState()) {
+      on<ThoughtEvent>(
+        _onThought,
+        transformer: restartable(),
+      )
+    }
+  }
+  ```
+
+## Best Practices
+
+### When to Use Each Transformer
+1. **Concurrent**
+   - Independent operations
+   - No state dependencies
+   - Performance-critical scenarios
+
+2. **Sequential**
+   - State-dependent operations
+   - Financial transactions
+   - Order-sensitive operations
+
+3. **Droppable**
+   - API calls that shouldn't be duplicated
+   - Rate-limited operations
+   - Debounced user actions
+
+4. **Restartable**
+   - Search operations
+   - Real-time updates
+   - Cancelable operations
+
+### Testing Considerations
+- Use `await Future<void>.delayed(Duration.zero)` in tests to ensure event order
+- Example:
+  ```dart
+  blocTest<MyBloc, MyState>(
+    'change value',
+    build: () => MyBloc(),
+    act: (bloc) {
+      bloc.add(ChangeValue(add: 1));
+      await Future<void>.delayed(Duration.zero);
+      bloc.add(ChangeValue(remove: 1));
+    },
+    expect: () => const [
+      MyState(value: 1),
+      MyState(value: 0),
+    ],
+  );
+  ```
+
+## Common Pitfalls
+1. Using concurrent transformer for state-dependent operations
+2. Not considering event order in tests
+3. Overusing sequential transformer for independent operations
+4. Ignoring potential race conditions
+
+## File Pattern
+*.dart 

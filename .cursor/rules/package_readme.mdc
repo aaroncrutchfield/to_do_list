@@ -1,0 +1,161 @@
+---
+description: 
+globs: README.md
+alwaysApply: false
+---
+---
+description: Guidelines for creating consistent README files for packages
+globs: '**/*.md'
+---
+# 📝 Package README Format Guidelines
+
+## Overview
+This rule file provides guidelines for creating consistent, well-structured README files for packages in the project. Follow this format to maintain a professional and informative documentation style.
+
+## 📄 Main Format
+
+The package README should follow this general structure:
+
+```md
+# 📄 Package Name
+
+[![style: very good analysis][very_good_analysis_badge]][very_good_analysis_link]
+
+A concise description of what the package does and its primary value proposition.
+
+## ✨ Features
+
+- Feature one
+- Feature two
+- Feature three
+- Feature four
+
+## 🔍 Overview
+
+A more detailed explanation of the package's purpose, how it fits into the architecture, and its general approach.
+
+## 🔥 External Services (if applicable)
+
+If the package integrates with external services like Firebase, provide links to those resources:
+[service-name/resource](mdc:https:/link-to-resource)
+
+## 💡 Usage
+
+```dart
+// Example code showing how to initialize and use the package
+final repository = Repository(
+  dependencies,
+);
+
+// Example showing how to use the package
+try {
+  final result = await repository.performAction();
+  // Use the result...
+} on SpecificException catch (e) {
+  // Handle exception...
+}
+```
+
+## 💻 Installation
+
+**❗ In order to start using Package Name you must have the [Flutter SDK][flutter_install_link] installed on your machine.**
+
+Add to your `pubspec.yaml`:
+
+```yaml
+dependencies:
+  package_name:
+    path: path/to/package_name
+```
+
+Or install via `flutter pub add`:
+
+```sh
+flutter pub add package_name
+```
+
+## 📦 Dependencies
+
+- [dependency_one](mdc:https:/pub.dev/packages/dependency_one): Brief description of what it's used for
+- [dependency_two](mdc:https:/pub.dev/packages/dependency_two): Brief description of what it's used for
+
+## 🧪 Running Tests
+
+For first time users, install the [very_good_cli][very_good_cli_link]:
+
+```sh
+dart pub global activate very_good_cli
+```
+
+To run all unit tests:
+
+```sh
+very_good test --coverage
+```
+
+To view the generated coverage report you can use [lcov](mdc:https:/github.com/linux-test-project/lcov).
+
+```sh
+# Generate Coverage Report
+genhtml coverage/lcov.info -o coverage/
+
+# Open Coverage Report
+open coverage/index.html
+```
+
+[flutter_install_link]: https://docs.flutter.dev/get-started/install
+[license_badge]: https://img.shields.io/badge/license-MIT-blue.svg
+[license_link]: https://opensource.org/licenses/MIT
+[very_good_analysis_badge]: https://img.shields.io/badge/style-very_good_analysis-B22C89.svg
+[very_good_analysis_link]: https://pub.dev/packages/very_good_analysis
+[very_good_cli_link]: https://pub.dev/packages/very_good_cli
+```
+
+## 📊 Key Elements
+
+1. **Emojis for headers**: Include relevant emojis to make headers visually appealing and easy to scan.
+   
+2. **Badges**: Include badges for analysis style, build tools, and license.
+   
+3. **Concise description**: Start with a brief, clear description of the package's purpose.
+   
+4. **Feature list**: Use bullet points to highlight key features.
+   
+5. **Usage examples**: Show practical code examples of how to use the package.
+   
+6. **Installation instructions**: Provide clear steps for adding the package to a project.
+   
+7. **Dependencies with links**: List all dependencies with links to their pub.dev pages.
+   
+8. **Testing instructions**: Include steps for running tests and generating coverage reports.
+
+## 🔧 Implementation Details
+
+When creating or updating a README for a package:
+
+1. Replace "Package Name" with the actual package name.
+   
+2. Ensure all links are working and point to the correct resources.
+   
+3. Include practical code examples that demonstrate common use cases.
+   
+4. Provide clear descriptions of potential errors and exceptions.
+   
+5. If the package integrates with external services (Firebase, APIs, etc.), include relevant links.
+   
+6. Keep the badges section up to date with correct links.
+   
+7. Use appropriate emojis that match the section content.
+
+## 🎯 Template Sections
+
+- **📄 Package Name**: Main title with package name and emoji
+- **✨ Features**: Bullet point list of key features
+- **🔍 Overview**: Detailed explanation of the package
+- **🔥 External Services**: Links to external services (if applicable)
+- **💡 Usage**: Code examples with explanations
+- **💻 Installation**: Setup and installation instructions
+- **📦 Dependencies**: List of dependencies with links
+- **🧪 Running Tests**: Testing procedures
+
+This format ensures consistency across package documentation and provides users with a clear, informative guide to using the package. 
