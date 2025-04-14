@@ -21,14 +21,51 @@
       "request": "launch",
       "type": "dart",
       "program": "lib/main_staging.dart",
-      "args": ["--flavor", "staging", "--target", "lib/main_staging.dart"]
+      "args": [
+        "--flavor",
+        "staging",
+        "--target",
+        "lib/main_staging.dart"
+      ]
     },
     {
       "name": "Launch production",
       "request": "launch",
       "type": "dart",
       "program": "lib/main_production.dart",
-      "args": ["--flavor", "production", "--target", "lib/main_production.dart"]
+      "args": [
+        "--flavor",
+        "production",
+        "--target",
+        "lib/main_production.dart"
+      ]
+    },
+    {
+      "name": "Coverage",
+      "type": "dart",
+      "request": "launch",
+      "args": [
+        "--coverage"
+      ],
+      "templateFor": "test",
+      "codeLens": {
+        "for": [
+          "run-test",
+          "run-test-file"
+        ],
+        "title": "Coverage"
+      },
+      "postDebugTask": "View Coverage Report"
+    },
+    {
+      "name": "Flutter: Run all Tests",
+      "type": "dart",
+      "request": "launch",
+      "program": "./test/",
+      "args": [
+        "--coverage"
+      ],
+      "postDebugTask": "View Coverage Report"
     }
   ]
 }
